@@ -26,7 +26,7 @@ app.use(cors({
 app.use(express.json()); // Body parser
 
 // Routes
-app.post('/api/test', (req, res) => {
+app.get('/api/test', (req, res) => {
   res.json({ success: true });
 });
 
