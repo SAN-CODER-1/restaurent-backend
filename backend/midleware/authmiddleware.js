@@ -1,18 +1,45 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = 'your_jwt_secret_key';
+require('dotenv').config();
 
 const authenticateUser = (req, res, next) => {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) {
-        return res.status(401).json({ message: 'Access denied. No token provided.' });
+    // Get token from header
+    const authHeader = req.header('Authorization');
+    
+    // Check if token exists
+    if (!authHeader?.startsWith('Bearer ')) {
+        return res.status(401).json({ 
+            success: false,
+            message: 'Access denied. No valid token provided.' 
+        });
     }
 
+    // Extract token
+    const token = authHeader.split(' ')[1];
+
     try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.userId = decoded.userId;
+        // Verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // Attach user to request
+        req.user = {
+            id: decoded.userId,
+            ...decoded.user // spread any other user properties
+        };
+        
         next();
     } catch (error) {
-        res.status(400).json({ message: 'Invalid token.' });
+        // Handle different error cases
+        let message = 'Invalid token';
+        if (error.name === 'TokenExpiredError') {
+            message = 'Token expired';
+        } else if (error.name === 'JsonWebTokenError') {
+            message = 'Invalid token';
+        }
+        
+        return res.status(401).json({ 
+            success: false,
+            message 
+        });
     }
 };
 

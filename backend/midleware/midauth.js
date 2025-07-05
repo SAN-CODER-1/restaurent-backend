@@ -1,5 +1,6 @@
 // controllers/authController.js
 const jwt = require('jsonwebtoken');
+require('dotenv').config()
 
 exports.logins = async (req, res) => {
   const { email, password } = req.body;
