@@ -4,8 +4,8 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const serverless = require('serverless-http'); // ✅ Vercel-compatible wrapper
 
-const offerRoutes = require("../routess/offerroutes.js");
-const orderRoutes = require('../routess/orderRoutes.js');
+const offerRoutes = require("../backend/routess/offerroutes.js");
+const orderRoutes = require('../backend/routess/orderRoutes.js');
 
 const app = express();
 
@@ -26,6 +26,10 @@ app.use(cors({
 app.use(express.json()); // Body parser
 
 // Routes
+app.post('/api/test', (req, res) => {
+  res.json({ success: true });
+});
+
 app.use("/api/offers", offerRoutes);
 app.use("/api/orders", orderRoutes);
 
